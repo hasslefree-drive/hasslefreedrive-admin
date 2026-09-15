@@ -1,34 +1,45 @@
-﻿import * as admin from 'firebase-admin';
+import * as admin from 'firebase-admin';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-
 import * as fs from 'fs';
 
-dotenv.config();
+// Load .env from project root
+const rootEnv = path.resolve(process.cwd(), '.env');
+if (fs.existsSync(rootEnv)) dotenv.config({ path: rootEnv });
+else dotenv.config();
 
 if (!admin.apps.length) {
-  const serviceAccountPath = path.resolve(
-    process.cwd(),
-    process.env.GOOGLE_APPLICATION_CREDENTIALS || './serviceAccountKey.json'
-  );
-
-  if (fs.existsSync(serviceAccountPath)) {
+  // Option 1: JSON string in env var (Render deployment)
+  const credsJson = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+  if (credsJson) {
+    const serviceAccount = JSON.parse(credsJson);
     admin.initializeApp({
-      credential: admin.credential.cert(serviceAccountPath),
+      credential: admin.credential.cert(serviceAccount),
       projectId: process.env.FIREBASE_PROJECT_ID || 'haefreedrive',
     });
   } else {
-    delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
-    console.warn(
-      `Ã¢Å¡Â Ã¯Â¸Â  Firebase Admin: serviceAccountKey.json not found at "${serviceAccountPath}".\n` +
-      `   Place your Firebase service account key in the backend directory to enable Firestore queries.`
-    );
-    try {
+    // Option 2: Local file path (local dev)
+    const candidates = [
+      process.env.GOOGLE_APPLICATION_CREDENTIALS,
+      path.resolve(process.cwd(), 'backend/serviceAccountKey.json'),
+      path.resolve(process.cwd(), 'serviceAccountKey.json'),
+    ].filter(Boolean) as string[];
+
+    const keyPath = candidates.find((p) => fs.existsSync(p));
+
+    if (keyPath) {
       admin.initializeApp({
+        credential: admin.credential.cert(keyPath),
         projectId: process.env.FIREBASE_PROJECT_ID || 'haefreedrive',
       });
-    } catch (e) {
-      console.warn('Ã¢Å¡Â Ã¯Â¸Â  Firebase Admin initialized without credentials:', (e as Error).message);
+    } else {
+      try {
+        admin.initializeApp({
+          projectId: process.env.FIREBASE_PROJECT_ID || 'haefreedrive',
+        });
+      } catch (e) {
+        console.warn('Firebase Admin initialized without credentials:', (e as Error).message);
+      }
     }
   }
 }

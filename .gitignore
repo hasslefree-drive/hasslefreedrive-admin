@@ -1,35 +1,31 @@
 # Dependencies
 node_modules/
-frontend/node_modules/
-backend/node_modules/
 
 # Build outputs
 dist/
-frontend/dist/
-frontend/.vite/
 backend/dist/
 
 # Environment files & Secrets (NEVER commit these)
 .env
 .env.*
 *.env
-*.env.*
 !.env.example
-frontend/.env
-frontend/.env.*
 backend/.env
 backend/.env.*
+backend/.env.example
 
-# Firebase service account & credentials
+# Firebase credentials
 backend/serviceAccountKey.json
 serviceAccountKey.json
-*.json.key
 *.pem
 *.key
 
-# Data snapshots with sensitive personal info
+# Data snapshots
 backend/schema.json
 schema.json
+
+# Cache files
+.cache_ggshield
 
 # Logs
 *.log
@@ -40,3 +36,6 @@ npm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+# Deployment env reference files (contain real keys)
+.env.vercel
+.env.render
