@@ -1,38 +1,39 @@
 {
-    "name":  "hasslefreedrive-admin",
-    "private":  true,
-    "version":  "1.0.0",
-    "scripts":  {
-                    "dev":  "concurrently \"vite --host --port 5173\" \"npx tsx backend/src/server.ts\"",
-                    "build":  "tsc \u0026\u0026 vite build",
-                    "preview":  "vite preview",
-                    "seed:admin":  "npx tsx backend/src/scripts/seedAdmin.ts",
-                    "schema:fetch":  "npx tsx backend/src/scripts/fetchSchema.ts"
-                },
-    "dependencies":  {
-                         "axios":  "^1.20.0",
-                         "chart.js":  "^4.5.1",
-                         "cors":  "^2.8.5",
-                         "dotenv":  "^16.4.5",
-                         "express":  "^4.19.2",
-                         "firebase":  "^12.19.0",
-                         "firebase-admin":  "^12.3.0",
-                         "helmet":  "^7.1.0",
-                         "react":  "^19.3.0",
-                         "react-chartjs-2":  "^5.3.1",
-                         "react-dom":  "^19.3.0",
-                         "react-router-dom":  "^7.18.3"
-                     },
-    "devDependencies":  {
-                            "@types/cors":  "^2.8.17",
-                            "@types/express":  "^4.17.21",
-                            "@types/node":  "^20.14.0",
-                            "@types/react":  "^19.3.0",
-                            "@types/react-dom":  "^19.3.0",
-                            "@vitejs/plugin-react":  "^6.1.1",
-                            "concurrently":  "^8.2.2",
-                            "tsx":  "^4.16.0",
-                            "typescript":  "~5.5.3",
-                            "vite":  "^8.3.0"
-                        }
+  "name": "hasslefreedrive-admin",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently \"vite --host --port 5173\" \"npx tsx backend/src/server.ts\"",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "seed:admin": "npx tsx backend/src/scripts/seedAdmin.ts",
+    "schema:fetch": "npx tsx backend/src/scripts/fetchSchema.ts",
+    "start": "npx tsx backend/src/server.ts"
+  },
+  "dependencies": {
+    "axios": "^1.20.0",
+    "chart.js": "^4.5.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase": "^12.19.0",
+    "firebase-admin": "^12.3.0",
+    "helmet": "^7.1.0",
+    "react": "^19.3.0",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "concurrently": "^8.2.2",
+    "tsx": "^4.16.0",
+    "typescript": "~5.5.3",
+    "vite": "^8.3.0"
+  }
 }
