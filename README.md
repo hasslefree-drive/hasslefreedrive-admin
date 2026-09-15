@@ -126,4 +126,4 @@ This project is private and proprietary.
 
 ---
 
-<p align="center">Made with ❤️ by <strong>Bhavya Darji</strong></p>
+<p align="center">Made with ❤️ by <a href="https://bhavya-darji.vercel.app/" target="_blank"><strong>Bhavya Darji</strong></a></p>
