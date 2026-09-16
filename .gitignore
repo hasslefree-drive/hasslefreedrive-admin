@@ -39,3 +39,4 @@ Thumbs.db
 # Deployment env reference files (contain real keys)
 .env.vercel
 .env.render
+CLIENT_DEPLOYMENT_GUIDE.md
