@@ -2,7 +2,8 @@ import axios from 'axios';
 import { auth } from './firebase';
 import type { Driver, Booking, Customer, Stats, RevenuePoint, TripPoint } from '../types';
 
-const BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').trim().replace(/\/+$/, '');
+const BASE = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
 
 // Attach the Firebase ID token to every request automatically
 const api = axios.create({ baseURL: BASE });

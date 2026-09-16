@@ -1,4 +1,4 @@
-﻿import express from 'express';
+import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import * as dotenv from 'dotenv';
@@ -17,27 +17,42 @@ import { verifyAdminToken } from './middleware/auth';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// â”€â”€ Security & Parsing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Security & Parsing -----------------------------------------------------
 app.use(helmet());
+
+const frontendEnv = (process.env.FRONTEND_URL || 'http://localhost:5173').trim().replace(/\/+$/, '');
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const normalized = origin.trim().replace(/\/+$/, '');
+    if (
+      normalized === frontendEnv ||
+      frontendEnv === '*' ||
+      normalized.endsWith('.vercel.app') ||
+      normalized.includes('localhost')
+    ) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
   credentials: true,
 }));
 app.use(express.json());
 
-// â”€â”€ Health check (public) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Health check (public) --------------------------------------------------
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', project: 'haefreedrive', timestamp: new Date().toISOString() });
 });
 
-// â”€â”€ Protected Routes (require valid Firebase admin token) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Protected Routes (require valid Firebase admin token) ------------------
 app.use('/api/stats', verifyAdminToken, statsRouter);
 app.use('/api/drivers', verifyAdminToken, driversRouter);
 app.use('/api/bookings', verifyAdminToken, bookingsRouter);
 app.use('/api/users', verifyAdminToken, usersRouter);
 app.use('/api/reports', verifyAdminToken, reportsRouter);
 
-// â”€â”€ Global Error Handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Global Error Handler ---------------------------------------------------
 app.use(errorHandler);
 
 app.listen(PORT, () => {
