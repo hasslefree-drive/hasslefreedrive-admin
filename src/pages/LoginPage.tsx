@@ -27,7 +27,6 @@ const LoginPage: React.FC = () => {
       <div className="login-card">
         <div className="login-logo">
           <img src="/assests/Hasslelogo.png" alt="HassleFreeDrive" />
-          <h1>HassleFreeDrive</h1>
           <p>Admin Panel</p>
         </div>
         <form onSubmit={handleLogin} className="login-form">
