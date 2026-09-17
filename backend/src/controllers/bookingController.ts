@@ -14,6 +14,8 @@ const serializeBooking = (id: string, data: FirebaseFirestore.DocumentData) => (
   id,
   userId: data.user_id || data.userId || '',
   driverId: data.driver_id || data.driverId || null,
+  driverName: data.driver_name || data.driverName || '',
+  driverPhone: data.driver_phone || data.driverPhone || '',
   status: data.status || 'pending',
   name: data.passenger_name || data.name || '',
   phone: data.passenger_phone || data.phone || '',
@@ -45,7 +47,7 @@ export const getBookings = async (req: Request, res: Response): Promise<void> =>
     const statusFilter = req.query.status as string | undefined;
     const bookingTypeFilter = req.query.bookingType as string | undefined;
 
-    const bookings = snap.docs
+    const rawBookings = snap.docs
       .map((doc) => serializeBooking(doc.id, doc.data()))
       .filter((b) => {
         if (statusFilter && statusFilter !== 'all' && b.status !== statusFilter) {
@@ -55,6 +57,39 @@ export const getBookings = async (req: Request, res: Response): Promise<void> =>
           return false;
         }
         return true;
+      });
+
+    // Resolve driver names and phones from users collection for any assigned bookings
+    const missingDriverIds = Array.from(
+      new Set(rawBookings.filter((b) => b.driverId && (!b.driverName || !b.driverPhone)).map((b) => b.driverId as string))
+    );
+
+    const driverMap: Record<string, { name: string; phone: string }> = {};
+    if (missingDriverIds.length > 0) {
+      const driverDocs = await Promise.all(
+        missingDriverIds.map((uid) => db.collection('users').doc(uid).get().catch(() => null))
+      );
+      for (const doc of driverDocs) {
+        if (doc && doc.exists) {
+          const d = doc.data() || {};
+          driverMap[doc.id] = {
+            name: d.name || '',
+            phone: d.phone || d.phoneNumber || '',
+          };
+        }
+      }
+    }
+
+    const bookings = rawBookings
+      .map((b) => {
+        if (b.driverId && driverMap[b.driverId]) {
+          return {
+            ...b,
+            driverName: b.driverName || driverMap[b.driverId].name,
+            driverPhone: b.driverPhone || driverMap[b.driverId].phone,
+          };
+        }
+        return b;
       })
       .sort((a, b) => {
         const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
@@ -78,7 +113,16 @@ export const getBooking = async (req: Request, res: Response): Promise<void> => 
       res.status(404).json({ error: 'Booking not found' });
       return;
     }
-    res.json(serializeBooking(doc.id, doc.data()!));
+    const booking = serializeBooking(doc.id, doc.data()!);
+    if (booking.driverId && (!booking.driverName || !booking.driverPhone)) {
+      const driverDoc = await db.collection('users').doc(booking.driverId).get().catch(() => null);
+      if (driverDoc && driverDoc.exists) {
+        const d = driverDoc.data() || {};
+        booking.driverName = booking.driverName || d.name || '';
+        booking.driverPhone = booking.driverPhone || d.phone || d.phoneNumber || '';
+      }
+    }
+    res.json(booking);
   } catch (err) {
     const error = err as Error;
     res.status(500).json({ error: error.message });

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 const Header: React.FC = () => {
@@ -13,10 +13,6 @@ const Header: React.FC = () => {
         <button className="menu-toggle" id="menuToggle" aria-label="Toggle menu">
           <i className="fa-solid fa-bars" />
         </button>
-        <div className="search-bar">
-          <i className="fa-solid fa-search" />
-          <input type="text" placeholder="Search drivers, rides..." />
-        </div>
       </div>
 
       <div className="header-right">

@@ -2,12 +2,15 @@
   "name": "hasslefreedrive-admin",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
+
   "scripts": {
-    "dev": "concurrently \"vite --host --port 5173\" \"npx tsx backend/src/server.ts\"",
+    "dev": "concurrently \"vite --host --port 5173\" \"npx tsx watch backend/src/server.ts\"",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "seed:admin": "npx tsx backend/src/scripts/seedAdmin.ts",
     "schema:fetch": "npx tsx backend/src/scripts/fetchSchema.ts",
+    "sync:emails": "npx tsx backend/src/scripts/syncAuthEmails.ts",
     "start": "npx tsx backend/src/server.ts"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-﻿/* =========================================
+/* =========================================
    CSS Variables & Resets
    ========================================= */
 :root {
@@ -156,7 +156,85 @@ h6 {
     color: #b45309;
 }
 
-/* Buttons */
+.badge-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Role-specific badge colours */
+.badge-driver {
+    background: #e0e7ff;
+    color: #3730a3;
+    border: 1px solid #c7d2fe;
+    display: inline-flex;
+    align-items: center;
+}
+
+.badge-customer {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Ride Status specific badge colours */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 20px;
+    letter-spacing: 0.02em;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.badge-status-completed {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.badge-status-accepted {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+
+.badge-status-scheduled {
+    background: #ede9fe;
+    color: #5b21b6;
+    border: 1px solid #ddd6fe;
+}
+
+.badge-status-searching {
+    background: #ffedd5;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}
+
+.badge-status-pending {
+    background: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fef08a;
+}
+
+.badge-status-cancelled {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+.badge-status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+
 .btn {
     padding: 0.6rem 1.2rem;
     border-radius: var(--radius-md);
@@ -932,6 +1010,28 @@ h6 {
     box-shadow: 0 0 0 3px var(--primary-light);
 }
 
+select.input-field {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 13px 13px;
+    padding-right: 2.4rem !important;
+    cursor: pointer;
+}
+
+/* Hide scrollbar utility */
+.hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
 .table-responsive {
     overflow-x: auto;
     position: relative;
@@ -984,6 +1084,176 @@ h6 {
     justify-content: flex-end;
     gap: 0.5rem;
 }
+
+/* Dashboard search bar inside card header */
+.dashboard-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 0.45rem 0.9rem;
+    min-width: 280px;
+    transition: var(--transition);
+}
+
+.dashboard-search-bar:focus-within {
+    border-color: var(--primary-color);
+    background: var(--bg-white);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.dashboard-search-bar i {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.dashboard-search-bar input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.875rem;
+    color: var(--text-dark);
+    width: 100%;
+}
+
+.dashboard-search-bar input::placeholder {
+    color: var(--text-light);
+}
+
+/* Role switch action button */
+.role-switch-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
+    background: var(--bg-white);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.role-switch-btn:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(15, 157, 88, 0.25);
+}
+
+.role-switch-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.role-switch-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Role Filter Header Button */
+.role-filter-header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+}
+
+.role-filter-header-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-dark);
+    border-color: var(--border-color);
+}
+
+/* Role Toggle Switch */
+.role-toggle-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+}
+
+.role-toggle-switch input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.role-toggle-track {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    background: #cbd5e1;
+    border-radius: 9999px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.role-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.role-toggle-switch input:checked + .role-toggle-track {
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+}
+
+.role-toggle-switch input:checked + .role-toggle-track .role-toggle-thumb {
+    transform: translateX(20px);
+    color: #4338ca;
+}
+
+.role-toggle-switch input:disabled + .role-toggle-track {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.role-toggle-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 54px;
+    text-align: left;
+}
+
+
+
 
 .data-table tbody tr:hover {
     background-color: var(--primary-light);

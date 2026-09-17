@@ -9,36 +9,72 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { fetchRevenueReport, fetchDrivers } from '../services/api';
-import type { RevenuePoint, Driver } from '../types';
+import { fetchRevenueReport } from '../services/api';
+import type { RevenuePoint } from '../types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+const CACHE_KEY_REPORTS_REV = 'hfd_cached_reports_rev';
+
 const ReportsPage: React.FC = () => {
-  const [revenueData, setRevenueData] = useState<RevenuePoint[]>([]);
-  const [drivers, setDrivers] = useState<Driver[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [revenueData, setRevenueData] = useState<RevenuePoint[]>(() => {
+    try {
+      const saved = localStorage.getItem(CACHE_KEY_REPORTS_REV);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [loading, setLoading] = useState<boolean>(() => {
+    try {
+      const savedRev = localStorage.getItem(CACHE_KEY_REPORTS_REV);
+      const hasRev = savedRev && JSON.parse(savedRev).length > 0;
+      return !hasRev;
+    } catch {
+      return true;
+    }
+  });
+
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [error, setError] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadData = async () => {
       try {
-        setLoading(true);
-        const [rev, drvs] = await Promise.all([
-          fetchRevenueReport().catch(() => []),
-          fetchDrivers().catch(() => []),
-        ]);
-        setRevenueData(rev || []);
-        setDrivers(drvs || []);
+        if (revenueData.length === 0) {
+          setLoading(true);
+        } else {
+          setIsSyncing(true);
+        }
+
+        const rev = await fetchRevenueReport().catch(() => []);
+
+        if (!isMounted) return;
+
+        const revList = rev || [];
+        setRevenueData(revList);
+
+        try {
+          localStorage.setItem(CACHE_KEY_REPORTS_REV, JSON.stringify(revList));
+        } catch {}
       } catch (err) {
-        setError((err as Error).message);
+        if (isMounted) setError((err as Error).message);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+          setIsSyncing(false);
+        }
       }
     };
+
     loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const totalRevenue = revenueData.reduce((acc, curr) => acc + curr.total, 0);
@@ -83,19 +119,29 @@ const ReportsPage: React.FC = () => {
     },
   };
 
-  const filteredDrivers = drivers.filter((d) => {
-    const matchesSearch =
-      (d.name && d.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (d.phone && d.phone.includes(searchTerm));
-    const matchesStatus = filterStatus === 'all' || d.verificationStatus === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
-
   return (
     <section id="reports" className="view-section view-container active">
       <div className="page-header flex-header">
         <div>
-          <h1>Analytics & Reports</h1>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            Analytics &amp; Reports
+            {isSyncing && (
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  color: 'var(--primary-color)',
+                  fontWeight: 500,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                }}
+                title="Updating with latest data in background..."
+              >
+                <i className="fa-solid fa-arrows-rotate fa-spin" style={{ fontSize: '0.65rem' }} />
+                Syncing...
+              </span>
+            )}
+          </h1>
           <p>Generate and analyze business metrics dynamically.</p>
         </div>
       </div>
@@ -118,7 +164,7 @@ const ReportsPage: React.FC = () => {
             </div>
           </div>
           <div className="card-body" style={{ height: '340px', padding: '1.5rem' }}>
-            {loading ? (
+            {loading && revenueData.length === 0 ? (
               <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#6B7280' }}>
                 <div className="spinner" style={{ width: '32px', height: '32px', marginRight: '0.75rem' }} />
                 Loading report data...
@@ -135,76 +181,7 @@ const ReportsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Driver Database Report */}
-      <div className="card table-card">
-        <div className="card-header border-bottom flex-header">
-          <h3>Driver Database Report</h3>
-          <div className="table-filters" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <input
-              type="text"
-              className="input-field"
-              placeholder="Search drivers..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ minWidth: '220px' }}
-            />
-            <select
-              className="input-field"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-            >
-              <option value="all">All Status</option>
-              <option value="registration_received">Registration Received</option>
-              <option value="police_verification">Police Verification</option>
-              <option value="background_check">Background Check</option>
-              <option value="verified">Verified</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
-        </div>
-        <div className="table-responsive">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Driver ID</th>
-                <th>Driver Name</th>
-                <th>Phone</th>
-                <th>License No.</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: '#6B7280' }}>
-                    Loading drivers...
-                  </td>
-                </tr>
-              ) : filteredDrivers.length === 0 ? (
-                <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: '#6B7280' }}>
-                    No drivers found in Firebase
-                  </td>
-                </tr>
-              ) : (
-                filteredDrivers.map((driver) => (
-                  <tr key={driver.uid}>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{driver.uid.slice(0, 8)}...</td>
-                    <td style={{ fontWeight: 600 }}>{driver.name || 'Unnamed Driver'}</td>
-                    <td>{driver.phone || 'N/A'}</td>
-                    <td>{driver.drivingLicense || 'N/A'}</td>
-                    <td>
-                      <span className={`badge ${driver.verificationStatus === 'verified' ? 'badge-success' : 'badge-warning'}`}>
-                        {driver.verificationStatus ? driver.verificationStatus.replace('_', ' ') : 'Pending'}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+
     </section>
   );
 };

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { db } from '../config/firebase';
 import { Timestamp } from 'firebase-admin/firestore';
+import { enrichWithAuthEmails } from '../utils/userUtils';
 
 const parseDateString = (val: any): string | null => {
   if (!val) return null;
@@ -17,10 +18,13 @@ export const getDrivers = async (req: Request, res: Response): Promise<void> => 
 
     const statusFilter = req.query.status as string | undefined;
 
-    const drivers = snap.docs
+    let drivers = snap.docs
       .filter((doc) => {
         const d = doc.data();
-        const isDriver = d.type === 'driver' || !!d.drivingLicense || !!d.serviceType;
+        // Strict: explicit 'customer' or 'admin' type is never a driver
+        if (d.type === 'customer' || d.type === 'admin') return false;
+        // Explicit driver OR legacy heuristic when type is unset
+        const isDriver = d.type === 'driver' || (!d.type && (!!d.drivingLicense || !!d.serviceType));
         if (!isDriver) return false;
 
         if (statusFilter && statusFilter !== 'all') {
@@ -52,6 +56,14 @@ export const getDrivers = async (req: Request, res: Response): Promise<void> => 
           emergencyName: data.emergencyName || '',
           emergencyPhone: data.emergencyPhone || '',
           documents: data.documents || {},
+          profilePhotoUrl: data.profilePhotoUrl || '',
+          experience: data.experience || '',
+          serviceType: data.serviceType || '',
+          city: data.city || '',
+          state: data.state || '',
+          street: data.street || '',
+          houseNo: data.houseNo || '',
+          pincode: data.pincode || '',
           onboardingCompleted: data.onboardingCompleted || false,
           verificationStatus,
           verificationNotes: data.verificationNotes || '',
@@ -64,6 +76,9 @@ export const getDrivers = async (req: Request, res: Response): Promise<void> => 
         const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
         return bTime - aTime;
       });
+
+    // Resolve missing emails from Firebase Auth
+    drivers = await enrichWithAuthEmails(drivers);
 
     res.json({ drivers });
   } catch (err) {

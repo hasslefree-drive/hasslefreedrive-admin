@@ -5,38 +5,56 @@ node_modules/
 dist/
 backend/dist/
 
-# Environment files & Secrets (NEVER commit these)
+# ── Environment & Secrets (NEVER commit) ──────────────────────────────────────
 .env
 .env.*
 *.env
-!.env.example
 backend/.env
 backend/.env.*
-backend/.env.example
 
 # Firebase credentials
-backend/serviceAccountKey.json
 serviceAccountKey.json
+backend/serviceAccountKey.json
 *.pem
 *.key
 
-# Data snapshots
-backend/schema.json
-schema.json
-
-# Cache files
-.cache_ggshield
-
-# Logs
-*.log
-npm-debug.log*
-
-# OS & IDE
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-# Deployment env reference files (contain real keys)
+# Production env reference files
 .env.vercel
 .env.render
-CLIENT_DEPLOYMENT_GUIDE.md
+
+# ── Generated / data files ────────────────────────────────────────────────────
+backend/schema.json
+schema.json
+backend/dist/
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ── OS & Editor ───────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+Desktop.ini
+
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── Tool caches ───────────────────────────────────────────────────────────────
+.cache_ggshield
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+*.local

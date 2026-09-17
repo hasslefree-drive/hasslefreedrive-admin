@@ -79,6 +79,15 @@ export const fetchCustomers = async (): Promise<Customer[]> => {
   return data.users;
 };
 
+export const updateUserRole = async (
+  uid: string,
+  role: 'customer' | 'driver'
+): Promise<{ success: boolean; role: string }> => {
+  const { data } = await api.patch<{ success: boolean; role: string }>(`/users/${uid}/role`, { role });
+  return data;
+};
+
+
 // ── Reports ───────────────────────────────────────────────────────────────
 export const fetchRevenueReport = async (): Promise<RevenuePoint[]> => {
   const { data } = await api.get<{ revenue: RevenuePoint[] }>('/reports/revenue');

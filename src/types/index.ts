@@ -23,6 +23,14 @@ export interface Driver {
     panUrl?: string;
     dlUrl?: string;
   };
+  profilePhotoUrl?: string;
+  experience?: string;
+  serviceType?: string;
+  city?: string;
+  state?: string;
+  street?: string;
+  houseNo?: string;
+  pincode?: string;
   onboardingCompleted: boolean;
   verificationStatus: 'pending' | 'background_check' | 'police_verification' | 'registration_received' | 'verified' | 'rejected';
   verificationNotes: string;
@@ -34,6 +42,8 @@ export interface Booking {
   id: string;
   userId: string;
   driverId: string | null;
+  driverName?: string;
+  driverPhone?: string;
   status: 'pending' | 'searching' | 'scheduled' | 'accepted' | 'completed' | 'cancelled' | 'rejected';
   name: string;
   phone: string;

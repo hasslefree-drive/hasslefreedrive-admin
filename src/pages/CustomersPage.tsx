@@ -2,25 +2,65 @@ import React, { useEffect, useState } from 'react';
 import { fetchCustomers } from '../services/api';
 import type { Customer } from '../types';
 
+const CACHE_KEY_CUSTOMERS = 'hfd_cached_customers';
+
 const CustomersPage: React.FC = () => {
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [customers, setCustomers] = useState<Customer[]>(() => {
+    try {
+      const saved = localStorage.getItem(CACHE_KEY_CUSTOMERS);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [loading, setLoading] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(CACHE_KEY_CUSTOMERS);
+      return !saved || JSON.parse(saved).length === 0;
+    } catch {
+      return true;
+    }
+  });
+
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadCustomers = async () => {
       try {
-        setLoading(true);
+        if (customers.length === 0) {
+          setLoading(true);
+        } else {
+          setIsSyncing(true);
+        }
+
         const data = await fetchCustomers();
-        setCustomers(data || []);
+        if (!isMounted) return;
+
+        const customerList = data || [];
+        setCustomers(customerList);
+        try {
+          localStorage.setItem(CACHE_KEY_CUSTOMERS, JSON.stringify(customerList));
+        } catch {}
       } catch (err) {
-        setError((err as Error).message);
+        if (isMounted) setError((err as Error).message);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+          setIsSyncing(false);
+        }
       }
     };
+
     loadCustomers();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const filtered = customers.filter((c) => {
@@ -36,7 +76,25 @@ const CustomersPage: React.FC = () => {
     <section id="customers" className="view-section view-container active">
       <div className="page-header flex-header">
         <div>
-          <h1>Customer Management</h1>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            Customer Management
+            {isSyncing && (
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  color: 'var(--primary-color)',
+                  fontWeight: 500,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                }}
+                title="Updating with latest data in background..."
+              >
+                <i className="fa-solid fa-arrows-rotate fa-spin" style={{ fontSize: '0.65rem' }} />
+                Syncing...
+              </span>
+            )}
+          </h1>
           <p>View registered customer accounts.</p>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -66,16 +124,17 @@ const CustomersPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
+              {loading && customers.length === 0 ? (
                 <tr>
                   <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: '#6B7280' }}>
+                    <i className="fa-solid fa-circle-notch fa-spin" style={{ marginRight: '0.5rem' }} />
                     Loading customers from Firebase...
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
                   <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: '#6B7280' }}>
-                    No customers found in Firebase
+                    {searchTerm ? `No customers matching "${searchTerm}"` : 'No customers found in Firebase'}
                   </td>
                 </tr>
               ) : (
