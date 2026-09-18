@@ -1,96 +1,82 @@
 # HassleFreeDrive Admin Panel
 
-A full-stack admin dashboard for managing the HassleFreeDrive platform — drivers, customers, bookings, analytics, and real-time updates powered by Firestore.
+<div align="center">
+
+**Enterprise Management Console & Real-Time Telemetry Dashboard for HassleFreeDrive**
+
+[![Private & Proprietary](https://img.shields.io/badge/Status-Private%20%26%20Proprietary-red?style=for-the-badge)](LICENSE)
+[![React](https://img.shields.io/badge/React-19.0-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Express](https://img.shields.io/badge/Express-Backend-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com)
+[![Firebase](https://img.shields.io/badge/Firebase-Admin%20%26%20Firestore-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com)
+
+</div>
 
 ---
 
-## ✨ Features
+## Overview
 
-- 🔐 **Secure Login** — Firebase Authentication (admin-only access)
-- 👨‍✈️ **Driver Management** — View all drivers, inspect submitted verification documents (Aadhaar, PAN, DL), and toggle active status
-- 👤 **Customer Management** — Browse all registered customer accounts with search and filtering
-- 🚗 **Ride Management** — Track all bookings with status badges, driver name & phone, passenger info, pickup/drop locations
-- 📊 **Analytics & Reports** — Monthly revenue bar chart powered by live Firestore data
-- 🔴 **Real-time Dashboard** — Stats cards (drivers, verified drivers, total rides) and the user table update live via Firestore `onSnapshot` — no page reload needed
-- ⚙️ **Settings** — Admin profile management
+The **HassleFreeDrive Admin Panel** is a centralized administrative command center engineered to oversee and manage the entire HassleFreeDrive mobility platform. It provides operations teams with live visibility and administrative controls over driver onboarding, KYC document verification, customer accounts, ride lifecycles, and platform analytics.
+
+Built with a modern full-stack architecture combining a React frontend and an Express TypeScript backend, the platform leverages Cloud Firestore real-time snapshots to deliver instantaneous operational updates without requiring manual browser refreshes.
 
 ---
 
-## 🧱 Tech Stack
+## Features
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 19, TypeScript, Vite 8, Chart.js |
-| Backend | Node.js, Express, TypeScript, tsx (hot reload) |
-| Auth & DB | Firebase Auth + Firestore (Admin SDK on backend, client SDK for real-time on frontend) |
-| Styling | Vanilla CSS (custom design system, no Tailwind) |
-| Deployment | Vercel (frontend) + Render (backend) |
+- **Secure Authentication**: Protected administrative entry using Firebase Authentication with token validation.
+- **Driver Verification & KYC**: Comprehensive driver inspection interface to examine submitted identity documents (Aadhaar, PAN, Driving License) and toggle active/verified status.
+- **Customer Directory**: Searchable and filterable registry of registered customer accounts with detailed trip telemetry.
+- **Ride Lifecycle Monitoring**: Real-time tracking of active, completed, and canceled bookings with driver assignment details and route coordinates.
+- **Telemetry & Revenue Analytics**: Dynamic monthly financial reporting and operational metrics powered by Chart.js.
+- **Live Reactive Dashboard**: Metric summaries (total drivers, active rides, completed trips) powered by Firestore real-time listeners.
+- **Administrative Settings**: Profile, role controls, and secure system configuration management.
 
 ---
 
-## 🚀 Getting Started
+## Tech Stack
+
+| Layer | Technologies |
+|---|---|
+| Frontend | React 19, TypeScript, Vite 8, Chart.js, React-Chartjs-2 |
+| Backend | Node.js, Express, TypeScript, tsx runtime |
+| Database & Auth | Firebase Authentication, Cloud Firestore (Client SDK & Firebase Admin SDK) |
+| Styling | Vanilla CSS Design System (clean dark-mode aesthetics) |
+| Hosting & Deployment | Vercel (Frontend Client) & Render (Backend API) |
+
+---
+
+## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- A Firebase project with Firestore and Authentication enabled
-- `serviceAccountKey.json` downloaded from Firebase Console → Project Settings → Service Accounts
 
-### 1. Clone & install
-```bash
-git clone https://github.com/bhavya-darjii/Hasslefreedrive-Admin.git
-cd Hasslefreedrive-Admin
-npm install
-```
+- Node.js 18.x or higher
+- npm or yarn package manager
+- Google Firebase project with Authentication and Firestore enabled
+- Firebase Admin SDK credentials (`serviceAccountKey.json`)
 
-### 2. Set up environment variables
-Create a `.env` file at the project root with your credentials. See [Environment Variables](#-environment-variables) below for the full list.
+### Installation
 
-### 3. Add Firebase service account
-Place your `serviceAccountKey.json` inside the `backend/` folder.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/bhavya-darjii/Hasslefreedrive-Admin.git
+   cd Hasslefreedrive-Admin
+   ```
 
-### 4. Run the dev server
-```bash
-npm run dev
-```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-Starts both:
-- **Frontend** → http://localhost:5173
-- **Backend API** → http://localhost:5000
+3. **Configure Firebase Service Account:**
+   Place your downloaded `serviceAccountKey.json` from the Firebase Console inside the `backend/` directory.
 
----
+### Environment Variables
 
-## 📁 Project Structure
-
-```
-hasslefreedrive-admin/
-├── backend/                  # Express API (Node + TypeScript)
-│   └── src/
-│       ├── config/           # Firebase Admin SDK setup
-│       ├── controllers/      # Route handlers (users, drivers, bookings, reports)
-│       ├── middleware/        # Auth verification & error handling
-│       ├── routes/           # API route definitions
-│       ├── utils/            # Shared helpers
-│       └── server.ts         # Entry point
-├── src/                      # React frontend
-│   ├── components/           # Layout (Header, Sidebar)
-│   ├── context/              # Auth context (Firebase)
-│   ├── pages/                # Dashboard, Drivers, Customers, Rides, Reports, Settings
-│   ├── services/             # API client (axios) & Firebase config (auth + Firestore)
-│   └── types/                # Shared TypeScript interfaces
-├── public/                   # Static assets
-├── index.html                # App entry point
-├── vite.config.ts            # Vite config
-└── package.json              # Unified scripts & dependencies
-```
-
----
-
-## 🔑 Environment Variables
-
-Create a `.env` file at the project root:
+Create a `.env` file in the root directory:
 
 ```env
-# ── Frontend (exposed to browser, prefix with VITE_) ──────────────────────────
+# Frontend Configuration (Vite)
 VITE_API_BASE_URL=http://localhost:5000/api
 VITE_FIREBASE_API_KEY=your_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
@@ -99,42 +85,73 @@ VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 
-# ── Backend (server-side only) ─────────────────────────────────────────────────
+# Backend Configuration
 PORT=5000
 FRONTEND_URL=http://localhost:5173
 FIREBASE_PROJECT_ID=your_project_id
 ```
 
-### Production (Render backend)
-Instead of a key file, set:
+### Running the Application
+
+```bash
+# Start both frontend and backend concurrently in development mode
+npm run dev
 ```
-GOOGLE_APPLICATION_CREDENTIALS_JSON=<paste entire serviceAccountKey.json contents as a string>
+
+- Frontend client runs at `http://localhost:5173`
+- Backend API server runs at `http://localhost:5000`
+
+---
+
+## Project Structure
+
+```
+hasslefreedrive-admin/
+├── backend/                  # Express API (Node.js + TypeScript)
+│   └── src/
+│       ├── config/           # Firebase Admin SDK initialization
+│       ├── controllers/      # Route controllers (users, drivers, bookings, reports)
+│       ├── middleware/       # ID token validation & security handlers
+│       ├── routes/           # REST endpoint definitions
+│       ├── utils/            # Helper utilities
+│       └── server.ts         # Server entry point
+├── src/                      # React Frontend Application
+│   ├── components/           # Common components (Header, Sidebar)
+│   ├── context/              # Firebase Auth Context Provider
+│   ├── pages/                # Admin views (Dashboard, Drivers, Rides, Reports, Settings)
+│   ├── services/             # API client & Firebase Client SDK initialization
+│   └── types/                # TypeScript interfaces & data contracts
+├── public/                   # Static public assets
+├── index.html                # Single-page application entry point
+├── vite.config.ts            # Vite build configuration
+└── package.json              # Unified project scripts & dependencies
 ```
 
 ---
 
-## 📦 Scripts
+## Security Notes
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start frontend + backend concurrently with hot reload |
-| `npm run build` | Build frontend for production |
-| `npm run seed:admin` | Create the initial admin user in Firestore |
-| `npm run schema:fetch` | Fetch and print the current Firestore schema |
+- All administrative endpoints require valid Firebase ID tokens passed via authorization headers.
+- Backend queries use privileged Firebase Admin SDK credentials strictly segregated from client bundles.
+- Credentials, private keys, and environment files are gitignored and excluded from version control.
 
 ---
 
-## 🔒 Security Notes
+## License
 
-- All API routes are protected by Firebase ID token verification (middleware)
-- Service account key and all `.env` files are gitignored — never commit secrets
-- Frontend only uses Firebase Auth and Firestore client SDK (read-only real-time listeners for the dashboard)
+**Copyright © 2026 Bhavya Darji. All Rights Reserved.**
+
+This project and its underlying source code are **confidential, private, and proprietary**. Unauthorized copying, modification, distribution, public display, or commercial use of this software, via any medium, is strictly prohibited without explicit prior written authorization from the copyright holder.
 
 ---
 
-## 📄 License
+## Author & Contact
 
-This project is private and proprietary.
+**Bhavya Darji**  
+- **Portfolio:** [bhavya-darji.vercel.app](https://bhavya-darji.vercel.app/)  
+- **GitHub:** [@bhavya-darjii](https://github.com/bhavya-darjii)  
+- **LinkedIn:** [Bhavya Darji](https://www.linkedin.com/in/bhavya-darji-181573242/)  
+- **Email:** [bhavyadarji462@gmail.com](mailto:bhavyadarji462@gmail.com)
 
 ---
 
