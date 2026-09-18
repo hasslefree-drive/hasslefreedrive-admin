@@ -138,4 +138,4 @@ This project is private and proprietary.
 
 ---
 
-<p align="center">Made with ❤️ by <a href="https://bhavya-darji.vercel.app/" target="_blank"><strong>Bhavya Darji</strong></a></p>
+<p align="center">Made with ❤️ by <a href="https://bhavya-darji.vercel.app/" target="_blank" rel="noopener noreferrer"><strong>Bhavya Darji</strong></a></p>
